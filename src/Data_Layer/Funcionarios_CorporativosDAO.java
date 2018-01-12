@@ -13,7 +13,9 @@ public class Funcionarios_CorporativosDAO {
 
 
     public ArrayList<Funcionario> getAll() { // APENAS PARA TESTES, NAO DA PARA USAR O MM NOME
+        String str;
         ArrayList<Funcionario> f = new ArrayList<>();
+        ArrayList<String> contactos = new ArrayList<>();
         try {
             con = Connect.connect();
             PreparedStatement ps = con.prepareStatement("SELECT * FROM Funcionarios AS F\n" +
@@ -24,20 +26,28 @@ public class Funcionarios_CorporativosDAO {
             int i = 0;
             while (rs.next()) {
                 if (i == 0 || f.get(i - 1).NIF != rs.getInt("NIF")) {
-                    f.add(new Funcionario(  rs.getInt("NIF"),
-                                            rs.getString("PrimNome"),
-                                            rs.getString("UltNome"),
-                                            rs.getDate("DataNascimento"),
-                                            rs.getString("IBAN"),
-                                            null,
-                                            rs.getString("Email"),
-                                            rs.getString("NrTelemovel")));
+                    f.add(i, new Funcionario());
+
+                    contactos = new ArrayList<>();
+
+                    f.get(i).NIF = rs.getInt("NIF");
+                    f.get(i).primNome = rs.getString("PrimNome");
+                    f.get(i).ultNome = rs.getString("UltNome");
+                    f.get(i).dataNascimento = rs.getDate("DataNascimento");
+                    f.get(i).IBAN = rs.getString("IBAN");
+                    f.get(i).cargo = null;
+                    f.get(i).email = rs.getString("Email");
+
+                    if ((str = rs.getString("NrTelemovel")) != null) {
+                        f.get(i).nrTelemovel.add(str);
+                    }
 
                     i++;
                 }
                 else {
-                    f.get(i - 1).contactos.add(rs.getString("NrTelemovel"));
+                    f.get(i - 1).nrTelemovel.add(rs.getString("NrTelemovel"));
                 }
+
             }
         } catch (SQLException e) {
             e.printStackTrace();

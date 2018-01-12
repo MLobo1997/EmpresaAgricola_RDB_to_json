@@ -16,22 +16,10 @@ public class Funcionario {
     public String IBAN;
     public Cargo cargo;
     public String email;
-    public ArrayList<String> contactos;
+    public ArrayList<String> nrTelemovel;
 
-    public Funcionario(int NIF, String primNome, String ultNome, Date dataNascimento, String IBAN, Cargo cargo, String email, String contacto) {
-        this.NIF = NIF;
-        this.primNome = primNome;
-        this.ultNome = ultNome;
-        this.dataNascimento = dataNascimento;
-        this.IBAN = IBAN;
-        this.cargo = cargo;
-        this.email = email;
-        this.contactos = new ArrayList<>();
-        contactos.add(contacto);
-    }
-
-    void addContacto (String c) {
-        contactos.add(c);
+    public Funcionario() {
+        this.nrTelemovel = new ArrayList<>();
     }
 
     @Override
@@ -44,16 +32,20 @@ public class Funcionario {
                 ", IBAN='" + IBAN + '\'' +
                 ", cargo=" + cargo +
                 ", email='" + email + '\'' +
-                ", contactos=" + contactos +
+                ", contactos=" + nrTelemovel +
                 '}';
     }
 
-    public String toJSON () {
-        String str = null;
+    public StringBuilder toJSON (StringBuilder str) {
         ObjectMapper mapper = new ObjectMapper();
 
+        if (str == null) {
+            str = new StringBuilder();
+        }
+
         try {
-            str = mapper.writeValueAsString(this);
+            str.append(mapper.writeValueAsString(this));
+            str.append('\n');
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
