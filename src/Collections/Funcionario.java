@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Funcionario {
@@ -15,9 +16,9 @@ public class Funcionario {
     public String IBAN;
     public Cargo cargo;
     public String email;
-    public String [] contactos;
+    public ArrayList<String> contactos;
 
-    public Funcionario(int NIF, String primNome, String ultNome, Date dataNascimento, String IBAN, Cargo cargo, String email, String[] contactos) {
+    public Funcionario(int NIF, String primNome, String ultNome, Date dataNascimento, String IBAN, Cargo cargo, String email, String contacto) {
         this.NIF = NIF;
         this.primNome = primNome;
         this.ultNome = ultNome;
@@ -25,7 +26,12 @@ public class Funcionario {
         this.IBAN = IBAN;
         this.cargo = cargo;
         this.email = email;
-        this.contactos = contactos;
+        this.contactos = new ArrayList<>();
+        contactos.add(contacto);
+    }
+
+    void addContacto (String c) {
+        contactos.add(c);
     }
 
     @Override
@@ -38,7 +44,7 @@ public class Funcionario {
                 ", IBAN='" + IBAN + '\'' +
                 ", cargo=" + cargo +
                 ", email='" + email + '\'' +
-                ", contactos=" + Arrays.toString(contactos) +
+                ", contactos=" + contactos +
                 '}';
     }
 

@@ -21,18 +21,24 @@ public class Funcionarios_CorporativosDAO {
                                                          "ON F.NIF = C.Funcionarios_NIF\n" +
                                                          "WHERE F.Quintas_ID IS NULL;");
             ResultSet rs = ps.executeQuery();
+            int i = 0;
             while (rs.next()) {
-                f.add(new Funcionario(  rs.getInt("NIF"),
-                                        rs.getString("PrimNome"),
-                                        rs.getString("UltNome"),
-                                        rs.getDate("DataNascimento"),
-                                        rs.getString("IBAN"),
-                                        null,
-                                        rs.getString("Email"),
-                                        null));
+                if (i == 0 || f.get(i - 1).NIF != rs.getInt("NIF")) {
+                    f.add(new Funcionario(  rs.getInt("NIF"),
+                                            rs.getString("PrimNome"),
+                                            rs.getString("UltNome"),
+                                            rs.getDate("DataNascimento"),
+                                            rs.getString("IBAN"),
+                                            null,
+                                            rs.getString("Email"),
+                                            rs.getString("NrTelemovel")));
 
+                    i++;
+                }
+                else {
+                    f.get(i - 1).contactos.add(rs.getString("NrTelemovel"));
+                }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
