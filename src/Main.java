@@ -1,20 +1,40 @@
-import Collections.Funcionario;
-import Data_Layer.Funcionarios_CorporativosDAO;
+import Data_Layer.FuncionariosCorporativosDAO;
+import Data_Layer.PlantacoesDAO;
+import Data_Layer.ProdutosDAO;
+import Documents.Document;
+import Documents.Produto;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.awt.*;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class Main {
 
-    public static void writeCorporativos (ArrayList<Funcionario> f) {
-        StringBuilder str = null;
-        final String filename = "corporativos.json";
+    public static StringBuilder toJSON (Document d, StringBuilder str) {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
 
-        for (Funcionario func : f) {
-            str = func.toJSON(str);
+
+        if (str == null) {
+            str = new StringBuilder();
+        }
+
+        try {
+            str.append(mapper.writeValueAsString(d));
+            str.append('\n');
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return str;
+    }
+    private static void writeCollection (ArrayList<Document> d, final String filename) {
+        StringBuilder str = null;
+
+        for (Document doc : d) {
+            str = toJSON(doc, str);
         }
 
         try {
@@ -29,9 +49,43 @@ public class Main {
         }
     }
 
-    public static void main (String [] args) {
-        Funcionarios_CorporativosDAO f = new Funcionarios_CorporativosDAO();
+    private static void shellExec(String cmd) {
+        Process cmdProc;
+        try {
+            cmdProc = Runtime.getRuntime().exec(cmd);
 
-        Main.writeCorporativos(f.getAll());
+
+            BufferedReader stdoutReader = new BufferedReader(new InputStreamReader(cmdProc.getInputStream()));
+            String line;
+            while ((line = stdoutReader.readLine()) != null) {
+                System.out.println(line);
+            }
+
+            BufferedReader stderrReader = new BufferedReader(new InputStreamReader(cmdProc.getErrorStream()));
+            while ((line = stderrReader.readLine()) != null) {
+                System.err.println(line);
+            }
+
+            if(cmdProc.exitValue() == 0){
+                System.out.println("Success!!");
+            } else {
+                System.err.println("Error!!");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main (String [] args) {
+
+        writeCollection(FuncionariosCorporativosDAO.getAll(), "corporativos.json");
+
+        writeCollection(ProdutosDAO.getAll(), "produtos.json");
+
+        writeCollection(PlantacoesDAO.getAll(), "plantacoes.json");
+
+        shellExec("mongoimport --db EmpresaAgricola --collection Funcionarios_Corporativos --file corporativos.json");
+        shellExec("mongoimport --db EmpresaAgricola --collection Produtos --file produtos.json");
+        shellExec("mongoimport --db EmpresaAgricola --collection Plantacoes --file plantacoes.json");
     }
 }
