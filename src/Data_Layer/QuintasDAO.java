@@ -1,9 +1,6 @@
 package Data_Layer;
 
-import Documents.Document;
-import Documents.Endereco;
-import Documents.Funcionario;
-import Documents.Quinta;
+import Documents.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,6 +9,43 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class QuintasDAO {
+
+    private static ArrayList<Document> getAllMaquinas (int Quinta) {
+        ArrayList<Document> r = new ArrayList<>();
+        Connection con = null;
+        try {
+            con = Connect.connect();
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM QuintasTemMaquinas AS QTM\n" +
+                                                        "JOIN Maquinas AS M\n" +
+                                                        "ON M.ID = QTM.Maquinas_ID\n" +
+                                                        "WHERE QTM.Quintas_ID = ?");
+            ps.setInt(1, Quinta);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Maquina m = new Maquina();
+
+                m.Classe = rs.getString("Classe").charAt(0);
+                m.DespesaMensal_euros = rs.getInt("DespesaMensal_euros");
+                m.Modelo = rs.getString("Modelo");
+                m.Tipo = rs.getString("Tipo");
+                m.Quantas = rs.getInt("Quantas");
+
+                r.add(m);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return r;
+    }
 
     private static ArrayList<Document> getAllFuncionarios (int Quinta) {
         ArrayList<Document> r = null;
@@ -62,7 +96,7 @@ public class QuintasDAO {
                 q.Nome = rs.getString("Nome");
                 q.Funcionarios = getAllFuncionarios(rs.getInt("ID"));
                 q.Lotes = null;
-                q.Maquinas = null;
+                q.Maquinas = getAllMaquinas(rs.getInt("ID"));
 
                 r.add(q);
             }

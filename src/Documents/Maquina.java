@@ -5,4 +5,5 @@ public class Maquina extends Document{
     public String Modelo;
     public double DespesaMensal_euros;
     public char Classe;
+    public int Quantas;
 }
