@@ -44,9 +44,7 @@ public class PlantacoesDAO {
                 r.add(p);
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         } finally {
             try {

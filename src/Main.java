@@ -1,6 +1,7 @@
 import Data_Layer.FuncionariosCorporativosDAO;
 import Data_Layer.PlantacoesDAO;
 import Data_Layer.ProdutosDAO;
+import Data_Layer.QuintasDAO;
 import Documents.Document;
 import Documents.Produto;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -63,7 +64,7 @@ public class Main {
 
             BufferedReader stderrReader = new BufferedReader(new InputStreamReader(cmdProc.getErrorStream()));
             while ((line = stderrReader.readLine()) != null) {
-                System.err.println(line);
+                System.out.println(line);
             }
 
             if(cmdProc.exitValue() == 0){
@@ -84,8 +85,11 @@ public class Main {
 
         writeCollection(PlantacoesDAO.getAll(), "plantacoes.json");
 
+        writeCollection(QuintasDAO.getAll(), "quintas.json");
+
         shellExec("mongoimport --db EmpresaAgricola --collection Funcionarios_Corporativos --file corporativos.json");
         shellExec("mongoimport --db EmpresaAgricola --collection Produtos --file produtos.json");
         shellExec("mongoimport --db EmpresaAgricola --collection Plantacoes --file plantacoes.json");
+        shellExec("mongoimport --db EmpresaAgricola --collection Quintas --file quintas.json");
     }
 }
