@@ -17,7 +17,7 @@ public class PlantacoesDAO {
 
         try {
             con = Connect.connect();
-            PreparedStatement ps = con.prepareStatement("SELECT P.AreaPlantada_m2 AS Area, P.DataInicio AS DataI, P.DataFim AS DataF, L.Designio AS Lote, Q.Nome AS Quinta, Prod.Nome AS Produto\n" +
+            PreparedStatement ps = con.prepareStatement("SELECT P.AreaPlantada_m2 AS Area, P.DataInicio AS DataI, P.DataFim AS DataF, L.Designio AS Lote, Q.Nome AS Quinta, Prod.Nome AS Produto, P.Despesa_euros AS Desp\n" +
                                                         "FROM Plantacoes as P\n" +
                                                         "JOIN Lotes AS L\n" +
                                                         "ON L.ID = P.Lotes_ID\n" +
@@ -40,6 +40,7 @@ public class PlantacoesDAO {
                 p.Lote = rs.getString("Lote");
                 p.Quinta = rs.getString("Quinta");
                 p.Produto = rs.getString("Produto");
+                p.Despesa_euros = rs.getDouble("Desp");
 
                 r.add(p);
             }

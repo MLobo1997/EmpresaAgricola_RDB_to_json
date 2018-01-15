@@ -7,6 +7,7 @@ public class Plantacao extends Document{
     public String Lote;
     public String Produto;
     public int AreaPlantada_m2;
+    public double Despesa_euros;
     @JsonRawValue
     public String DataInicio;
     @JsonRawValue
