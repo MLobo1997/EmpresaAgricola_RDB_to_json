@@ -15,34 +15,30 @@ public class Funcionario extends Document{
     public String IBAN;
     public Cargo Cargo;
     public String Email;
-    public ArrayList<String> NrTelemovel;
 
-    public Funcionario() {
-        this.NrTelemovel = new ArrayList<>();
+    public Funcionario () {
+
     }
-
-    @Override
-    public String toString() {
-        return "Funcionario{" +
-                "NIF=" + NIF +
-                ", primNome='" + PrimNome + '\'' +
-                ", ultNome='" + UltNome + '\'' +
-                ", dataNascimento=" + DataNascimento +
-                ", IBAN='" + IBAN + '\'' +
-                ", cargo=" + Cargo +
-                ", email='" + Email + '\'' +
-                ", contactos=" + NrTelemovel +
-                '}';
+    public Funcionario(Funcionario f) {
+        this.NIF = f.NIF;
+        this.PrimNome = f.PrimNome;
+        this.UltNome = f.UltNome;
+        this.DataNascimento = f.DataNascimento;
+        this.IBAN = f.IBAN;
+        this.Cargo = f.Cargo;
+        this.Email = f.Email;
     }
 
     public static ArrayList<Document> loadFuncionarios (ResultSet rs) {
         ArrayList<Document> f = new ArrayList<>();
         Funcionario tmp = null;
+        FuncionarioComContactos tmp1 = null;
         String str;
         try {
             while (rs.next()) {
                 if (tmp == null || tmp.NIF != rs.getInt("NIF")) {
                     tmp = new Funcionario();
+                    tmp1 = null;
 
                     tmp.NIF = rs.getInt("NIF");
                     tmp.PrimNome = rs.getString("PrimNome");
@@ -52,20 +48,26 @@ public class Funcionario extends Document{
                     tmp.Cargo = null;
                     tmp.Email = rs.getString("Email");
 
-                    if ((str = rs.getString("NrTelemovel")) != null) {
-                        tmp.NrTelemovel.add(str);
-                    }
-
                     if ((str = rs.getString("Nome")) != null) {
                         tmp.Cargo = new Cargo();
                         tmp.Cargo.Nome = str;
                         tmp.Cargo.Salario_euros = rs.getInt("Salario_euros");
                     } else
                         System.err.println("A BD tem um erro no funcionário " + tmp.NIF);
+                    
+                    if ((str = rs.getString("NrTelemovel")) != null) {
+                        tmp1 = new FuncionarioComContactos(tmp);
+                        tmp1.NrTelemovel.add(str);
+                    }
 
-                    f.add(tmp);
+                    if (tmp1 == null) {
+                        f.add(tmp);
+                    }
+                    else {
+                        f.add(tmp1);
+                    }
                 } else {
-                    tmp.NrTelemovel.add(rs.getString("NrTelemovel"));
+                    tmp1.NrTelemovel.add(rs.getString("NrTelemovel"));
                 }
             }
         } catch (SQLException e) {

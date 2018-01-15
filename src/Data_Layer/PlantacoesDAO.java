@@ -2,6 +2,7 @@ package Data_Layer;
 
 import Documents.Document;
 import Documents.Plantacao;
+import Documents.PlantacaoComDataFim;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,19 +31,24 @@ public class PlantacoesDAO {
 
             while (rs.next()) {
                 Plantacao p = new Plantacao();
+                PlantacaoComDataFim pn = null;
 
                 p.AreaPlantada_m2 = rs.getInt("Area");
                 p.DataInicio = "ISODate(\"" + rs.getDate("DataI") + "T00:00:00Z\")";
-                p.DataFim = null;
-                if (rs.getDate("DataF") != null) {
-                    p.DataFim = "ISODate(\"" + rs.getDate("DataF") + "T00:00:00Z\")";
-                }
                 p.Lote = rs.getString("Lote");
                 p.Quinta = rs.getString("Quinta");
                 p.Produto = rs.getString("Produto");
                 p.Despesa_euros = rs.getDouble("Desp");
+                if (rs.getDate("DataF") != null) {
+                    pn = new PlantacaoComDataFim(p);
+                    pn.DataFim = "ISODate(\"" + rs.getDate("DataF") + "T00:00:00Z\")";
+                }
 
-                r.add(p);
+                if(pn == null) {
+                    r.add(p);
+                } else {
+                    r.add(pn);
+                }
             }
 
         } catch (SQLException | ClassNotFoundException e) {
